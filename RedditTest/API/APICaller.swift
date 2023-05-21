@@ -20,23 +20,23 @@ final class APICaller {
         let task = URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 completion(.failure(error))
+                print(error)
             } else if let data = data {
                 do {
                     let result = try JSONDecoder().decode(RedditData.self, from: data)
+                    print(result.data.count)
                 }
                 catch {
                     completion(.failure(error))
+                    print(error)
                 }
             }
         }
         task.resume()
     }
     
-    func mockData(subReddit: String? = "", completion: @escaping (Result<[String], Error>) -> Void) {
-        let mock = [
-            "1","2","Bananas","Pasas"
-        ]
-        completion(.success(mock))
+    var mockData: [String] {
+        return [ "1","2","Bananas","Pasas"]
     }
     
 }
