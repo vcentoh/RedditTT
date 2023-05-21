@@ -7,13 +7,12 @@ target 'RedditTest' do
 
   # Pods for RedditTest
 
-  target 'RedditTestTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'RedditTestUITests' do
-    # Pods for testing
-  end
+# Firebase
+pod 'Firebase/Core'
+pod 'Firebase/Auth'
+pod 'Firebase/Database'
+pod 'Firebase/Analytics'
+pod 'Firebase/Crashlytics'
+pod 'Alamofire'
 
 end

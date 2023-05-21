@@ -8,6 +8,8 @@
 import UIKit
 
 class HomeController: UIViewController, UITableViewDataSource {
+    
+    private let apiCaller =  APICaller()
 
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
