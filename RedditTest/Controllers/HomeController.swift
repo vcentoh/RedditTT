@@ -9,36 +9,38 @@ import UIKit
 
 class HomeController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    private let apiCaller =  APICaller()
+    private let apiCaller = APICaller()
     private var trueTableData: [RedditPost] = []
-    private var tableData: [String] = []
+    private var mockData: [RedditPost] = []
 
     @IBOutlet private weak var tableView: UITableView! = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         return tableView
     }()
+    
+    @IBOutlet private weak var searchText: UITextField! = {
+        let textField = UITextField()
+        return textField
+    }()
+    
+    @IBOutlet private weak var searchButton: UIButton! = {
+        let button = UIButton()
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(tableView)
-        APICaller.shared.fecthRedditData(completion:{ result in
-            switch result {
-                case .success(let response):
-                    self.trueTableData = response
-                case .failure(let error):
-                    print(error)
-            }
-            
-        })
-        tableData = apiCaller.mockData
+        trueTableData = apiCaller.fetchData()
+        dump(trueTableData)
+        mockData = apiCaller.getMock()
         tableView.dataSource = self
         tableView.delegate = self
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PostCellView", for: indexPath) as! PostCellView
-        cell.update(with: tableData[indexPath.item].description)
-     //   cell.update(with: trueTableData[indexPath.item])
+        cell.update(with: mockData[indexPath.item])
         return cell
     }
     
@@ -47,11 +49,15 @@ class HomeController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableData.count
+        return mockData.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
+    }
+    
+    override var shouldAutorotate: Bool {
+        return true
     }
 }
 

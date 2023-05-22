@@ -72,19 +72,41 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Escriba subreddit a buscar" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZWB-zd-KZo">
+                                <rect key="frame" x="30" y="79" width="277" height="72"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vKd-oI-QSG">
+                                <rect key="frame" x="327" y="79" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="KyK-XX-zj1"/>
+                                    <constraint firstAttribute="width" constant="50" id="Xg1-Co-ZvH"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="magnifyingglass" catalog="system"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="g9I-6J-P88" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="42r-uO-fmt"/>
+                            <constraint firstItem="vKd-oI-QSG" firstAttribute="leading" secondItem="ZWB-zd-KZo" secondAttribute="trailing" constant="20" id="5bW-Qu-f5a"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vKd-oI-QSG" secondAttribute="trailing" constant="16" id="67m-i4-aGd"/>
                             <constraint firstItem="g9I-6J-P88" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="9HF-yg-xSG"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="g9I-6J-P88" secondAttribute="trailing" constant="15" id="BwR-K3-dGL"/>
                             <constraint firstItem="g9I-6J-P88" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="15" id="C4D-qe-lvu"/>
+                            <constraint firstItem="vKd-oI-QSG" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="EZJ-Zl-K9P"/>
+                            <constraint firstItem="ZWB-zd-KZo" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="GEb-bo-I6S"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="g9I-6J-P88" secondAttribute="bottom" constant="100" id="Vvt-Mk-Hne"/>
+                            <constraint firstItem="g9I-6J-P88" firstAttribute="top" secondItem="ZWB-zd-KZo" secondAttribute="bottom" constant="8" symbolic="YES" id="Z7c-te-jzq"/>
                             <constraint firstItem="g9I-6J-P88" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="100" id="fMf-AV-cgX"/>
+                            <constraint firstItem="ZWB-zd-KZo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="h8B-Vu-joL"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="searchButton" destination="vKd-oI-QSG" id="fB8-Uf-oRk"/>
+                        <outlet property="searchText" destination="ZWB-zd-KZo" id="Fkb-vG-FG4"/>
                         <outlet property="tableView" destination="g9I-6J-P88" id="e5k-hC-6zb"/>
                     </connections>
                 </viewController>
@@ -94,6 +116,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

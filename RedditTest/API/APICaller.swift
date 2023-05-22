@@ -6,37 +6,57 @@
 //
 
 import Foundation
+import Alamofire
+
+let headers = [
+    "X-RapidAPI-Key": "54858c203bmsh87e556e774b19c0p10d1e4jsn7a29f7b9550c",
+    "X-RapidAPI-Host": "reddit3.p.rapidapi.com"
+]
 
 final class APICaller {
     static let shared = APICaller()
+    static let search: String = "https://www.reddit.com/"
     
-    struct Constans {
-        static let redditURL = URL(string: "redditapi.p.rapidapi.com")
-        static let apiKey: String = "54858c203bmsh87e556e774b19c0p10d1e4jsn7a29f7b9550c"
-    }
-    
-    public func fecthRedditData(subReddit: String? = "", completion: @escaping (Result<[RedditPost], Error>) -> Void) {
-        guard let url = Constans.redditURL else { return }
-        let task = URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                print(error)
-            } else if let data = data {
-                do {
-                    let result = try JSONDecoder().decode(RedditData.self, from: data)
-                    print(result.data.count)
-                }
-                catch {
-                    completion(.failure(error))
-                    print(error)
-                }
-            }
+    func fetchData(subReddit: String = "r/all") -> [RedditPost] {
+        var data: [RedditPost] = []
+        let search = APICaller.search + subReddit
+        
+        AF.session.configuration.httpAdditionalHeaders = headers
+        AF.request( URL(string: search)!  ).responseDecodable(of: RedditData.self) { (response) in
+            data = response.value?.data ?? []
+            print(response)
         }
-        task.resume()
+        return data
     }
     
-    var mockData: [String] {
-        return [ "1","2","Bananas","Pasas"]
+    
+    private func readLocalFile(forName name: String) -> Data? {
+        do {
+            if let bundlePath = Bundle.main.path(forResource: name,
+                                                 ofType: "json"),
+                let jsonData = try String(contentsOfFile: bundlePath).data(using: .utf8) {
+                return jsonData
+            }
+        } catch {
+            print(error)
+        }
+        return nil
     }
     
+    private func parse(jsonData: Data) -> [RedditPost] {
+        do {
+            let decodedData = try JSONDecoder().decode(RedditData.self,
+                                                       from: jsonData)
+            dump(decodedData)
+            return decodedData.data
+        } catch {
+            print("decode error")
+        }
+        return []
+    }
+    
+    func getMock() -> [RedditPost] {
+        guard let data = self.readLocalFile(forName: "mock") else { return [] }
+        return self.parse(jsonData: data)
+    }
 }

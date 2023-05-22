@@ -30,11 +30,7 @@ class PostCellView: UITableViewCell {
     
     func update(with post: RedditPost) {
         titleLabel.text = post.title
-        autorDateLabel.text = post.autor + " at " + post.date
-    }
-    
-    func update(with mock: String) {
-        titleLabel.text = mock
+        autorDateLabel.text = post.user
     }
     
     override func awakeFromNib() {
