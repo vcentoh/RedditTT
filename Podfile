@@ -7,12 +7,20 @@ target 'RedditTest' do
 
   # Pods for RedditTest
 
-# Firebase
-pod 'Firebase/Core'
-pod 'Firebase/Auth'
-pod 'Firebase/Database'
-pod 'Firebase/Analytics'
-pod 'Firebase/Crashlytics'
 pod 'Alamofire'
+pod 'SDWebImage'
+pod 'ObjectMapper'
+pod 'RxSwift'
+pod 'RxCocoa'
 
+end
+
+post_install do |installer|
+    installer.generated_projects.each do |project|
+          project.targets.each do |target|
+              target.build_configurations.each do |config|
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+               end
+          end
+   end
 end
