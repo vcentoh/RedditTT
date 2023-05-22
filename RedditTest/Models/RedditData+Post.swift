@@ -6,25 +6,28 @@
 //
 
 import Foundation
+import ObjectMapper
 
-struct RedditData: Decodable {
-    let data: [RedditPost]
+struct RedditData<T:Codable>: Codable  {
+    var page: Int
+    var results: [T]
 }
 
-struct RedditPost: Decodable {
-    let title: String
-    let user: String
-    let date: Int
-    let imageURL: String
-    let comments: Int
-    let subreddit: String
-    let URL: String
+struct RedditPost: Codable {
+    
+    var title: String = ""
+    var user: String = ""
+    var date: Int = 0
+    var thumbnail: String = ""
+    var comments: Int = 0
+    var subreddit: String = ""
+    var URL: String = ""
     
     enum CodingKeys: String, CodingKey {
         case title = "title"
         case user = "author"
         case date = "created"
-        case imageURL = "thumbnail"
+        case thumbnail = "thumbnail"
         case comments = "num_comments"
         case subreddit = "subreddit"
         case URL = "permalink"

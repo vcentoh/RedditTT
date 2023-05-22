@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class PostCellView: UITableViewCell {
 
@@ -31,6 +32,7 @@ class PostCellView: UITableViewCell {
     func update(with post: RedditPost) {
         titleLabel.text = post.title
         autorDateLabel.text = post.user
+  //      imageView?.sd_setImage(with: post.thumbnail.asURL())
     }
     
     override func awakeFromNib() {

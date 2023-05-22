@@ -7,56 +7,59 @@
 
 import Foundation
 import Alamofire
+import ObjectMapper
+import Combine
 
-let headers = [
+let apiHeaders: HTTPHeaders = [
     "X-RapidAPI-Key": "54858c203bmsh87e556e774b19c0p10d1e4jsn7a29f7b9550c",
     "X-RapidAPI-Host": "reddit3.p.rapidapi.com"
 ]
 
-final class APICaller {
+let apiUrl = URL(string: "https://reddit3.p.rapidapi.com/subreddit")
+
+class APICaller {
     static let shared = APICaller()
-    static let search: String = "https://www.reddit.com/"
+    private let search: String = "https://www.reddit.com/r/all"
     
-    func fetchData(subReddit: String = "r/all") -> [RedditPost] {
-        var data: [RedditPost] = []
-        let search = APICaller.search + subReddit
+}
+
+extension APICaller: ApiServiceProtocol {
+    func fetchAllData() -> AnyPublisher<DataResponse<RedditData<RedditPost>, APIRestError>, Never> {
+        guard let url = apiUrl else {
+            return emptyPublisher(error: ConfigError(code: 555, message: "No url Defined"))
+        }
         
-        AF.session.configuration.httpAdditionalHeaders = headers
-        AF.request( URL(string: search)!  ).responseDecodable(of: RedditData.self) { (response) in
-            data = response.value?.data ?? []
-            print(response)
-        }
-        return data
+        return AF.request(url, method: .get, parameters: search, headers: apiHeaders)
+            .proccessResponse(type: RedditData<RedditPost>.self)
     }
     
+    func fetchSubRedditData(reddit: String) -> AnyPublisher<Alamofire.DataResponse<RedditData<RedditPost>, APIRestError>, Never> {
+        guard let url = apiUrl else {
+            return emptyPublisher(error: ConfigError(code: 555, message: "No url Defined"))
+        }
+        
+        return AF.request(url, method: .get, parameters: reddit, headers: apiHeaders)
+            .proccessResponse(type: RedditData<RedditPost>.self)
+    }
     
-    private func readLocalFile(forName name: String) -> Data? {
-        do {
-            if let bundlePath = Bundle.main.path(forResource: name,
-                                                 ofType: "json"),
-                let jsonData = try String(contentsOfFile: bundlePath).data(using: .utf8) {
-                return jsonData
+    private func emptyPublisher<T: Codable>(error:  ConfigError) -> AnyPublisher<DataResponse<T, APIRestError>, Never> {
+        return Just<DataResponse<T, APIRestError>> (
+            DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(APIRestError(error: error, serverError: nil)))
+        ).eraseToAnyPublisher()
+    }
+}
+
+extension DataRequest {
+    func proccessResponse<T: Codable>(type: T.Type) -> AnyPublisher<DataResponse<T, APIRestError>, Never>{
+        validate()
+            .publishDecodable(type: type.self)
+            .map { response in
+                response.mapError { error  in
+                    let sError = response.data.flatMap { try? JSONDecoder().decode(ServerError.self, from: $0) }
+                    return APIRestError(error: error, serverError: sError)
+                }
             }
-        } catch {
-            print(error)
-        }
-        return nil
-    }
-    
-    private func parse(jsonData: Data) -> [RedditPost] {
-        do {
-            let decodedData = try JSONDecoder().decode(RedditData.self,
-                                                       from: jsonData)
-            dump(decodedData)
-            return decodedData.data
-        } catch {
-            print("decode error")
-        }
-        return []
-    }
-    
-    func getMock() -> [RedditPost] {
-        guard let data = self.readLocalFile(forName: "mock") else { return [] }
-        return self.parse(jsonData: data)
+        .receive(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
 }

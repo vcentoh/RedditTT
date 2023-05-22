@@ -31,9 +31,6 @@ class HomeController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(tableView)
-        trueTableData = apiCaller.fetchData()
-        dump(trueTableData)
-        mockData = apiCaller.getMock()
         tableView.dataSource = self
         tableView.delegate = self
     }
