@@ -6,13 +6,16 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import Combine
 
 class HomeController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    private let apiCaller = APICaller()
-    private var trueTableData: [RedditPost] = []
-    private var mockData: [RedditPost] = []
-
+    private let dataModel: PublisherModel = PublisherModel()
+    private var tableData: [RedditPost] = []
+    private var disposeBag = DisposeBag()
+    
     @IBOutlet private weak var tableView: UITableView! = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         return tableView
@@ -33,11 +36,37 @@ class HomeController: UIViewController, UITableViewDataSource, UITableViewDelega
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.delegate = self
+        loadData()
+    }
+    func searchData(reddit: String) {
+        tableData = dataModel.searchReddit(reddit: reddit)
+        tableView.reloadData()
+    }
+    
+    func loadData() {
+        tableData = dataModel.getPost()
+        tableView.reloadData()
+    }
+    
+    func bind() {
+        self.searchButton.rx
+            .tap
+            .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] () in
+                guard let self = self else { return }
+                if !(self.searchText.text?.isEmpty ?? true) {
+                    self.searchData(reddit: self.searchText.text?)
+                } else {
+                    self.loadData()
+                }
+            })
+            .disposed(by: disposeBag)
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PostCellView", for: indexPath) as! PostCellView
-        cell.update(with: mockData[indexPath.item])
+        cell.update(with: tableData[indexPath.item])
         return cell
     }
     
@@ -46,7 +75,7 @@ class HomeController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mockData.count
+        return tableData.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
